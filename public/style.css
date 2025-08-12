@@ -12,9 +12,4 @@ button.danger { background: #7f1d1d; border-color: #7f1d1d; }
 .hidden { display: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 8px; }
 video { width: 100%; max-height: 60vh; background: #111827; border-radius: 10px; }
-.participants { list-style: none; padding: 0; margin: 6px 0 0; }
-.participants li { padding: 8px 10px; border: 1px solid #334155; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.participants .name { font-weight: 600; }
-.pill { font-size: 12px; padding: 2px 6px; border-radius: 999px; background: #0b1220; border: 1px solid #334155; }
-
 

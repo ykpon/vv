@@ -21,7 +21,6 @@ const localShare = document.getElementById('localShare');
 const statusLine = document.getElementById('status');
 const remoteMuteBtn = document.getElementById('remoteMuteBtn');
 const remoteVolume = document.getElementById('remoteVolume');
-const participantsList = document.getElementById('participants');
 
 let ws;
 let pc;
@@ -51,15 +50,10 @@ function initWs() {
   const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${wsProto}://${location.host}`);
   ws.addEventListener('open', () => {
-    ws.send(JSON.stringify({ type: 'join', roomId, payload: { name: myDisplayName() } }));
+    ws.send(JSON.stringify({ type: 'join', roomId }));
   });
   ws.addEventListener('message', async (ev) => {
     const msg = JSON.parse(ev.data);
-    if (msg.type === 'welcome') {
-      selfId = msg.payload?.id;
-      selfName = msg.payload?.name || selfName;
-      return;
-    }
     if (msg.type === 'peer-joined') {
       // New peer joined -> we create and send an offer
       await ensurePeerConnection();
@@ -69,11 +63,6 @@ function initWs() {
     if (msg.type === 'room-peers') {
       // If there are already peers, we wait for their offer
       await ensurePeerConnection();
-      return;
-    }
-    if (msg.type === 'roster') {
-      const roster = msg.payload?.roster || [];
-      renderParticipants(roster);
       return;
     }
     if (msg.type === 'offer') {
@@ -291,30 +280,6 @@ remoteVolume?.addEventListener('input', (e) => {
   const val = Number(e.target.value) || 0;
   if (remoteAudio) remoteAudio.volume = val / 100;
 });
-
-// Simple identity helpers (can be extended to prompt user)
-let selfId = null;
-let selfName = `Вы`;
-function myDisplayName() { return selfName; }
-
-function renderParticipants(roster) {
-  if (!participantsList) return;
-  participantsList.innerHTML = '';
-  for (const p of roster) {
-    const li = document.createElement('li');
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'name';
-    nameSpan.textContent = p.id === selfId ? `${p.name} (вы)` : p.name;
-    const youPill = document.createElement('span');
-    if (p.id === selfId) {
-      youPill.className = 'pill';
-      youPill.textContent = 'you';
-    }
-    li.appendChild(nameSpan);
-    if (p.id === selfId) li.appendChild(youPill);
-    participantsList.appendChild(li);
-  }
-}
 
 // Auto-join if room param exists
 const params = new URLSearchParams(location.search);
