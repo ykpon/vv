@@ -1,0 +1,19 @@
+{
+  "name": "voicechat",
+  "version": "1.0.0",
+  "description": "Simple WebRTC voice chat with screen sharing and rooms",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^9.0.1",
+    "ws": "^8.17.0"
+  }
+}
+
+
