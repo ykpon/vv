@@ -47,10 +47,19 @@ function genId() {
 }
 
 function initWs() {
+  const params = new URLSearchParams(location.search);
+  const overrideWs = params.get('ws'); // e.g. ws=wss://your-signal.example.com
   const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${wsProto}://${location.host}`);
+  const wsUrl = overrideWs || `${wsProto}://${location.host}`;
+  ws = new WebSocket(wsUrl);
   ws.addEventListener('open', () => {
     ws.send(JSON.stringify({ type: 'join', roomId }));
+  });
+  ws.addEventListener('error', () => {
+    logStatus('Не удалось подключиться к сигнальному серверу');
+  });
+  ws.addEventListener('close', () => {
+    logStatus('Соединение с сигнальным сервером закрыто');
   });
   ws.addEventListener('message', async (ev) => {
     const msg = JSON.parse(ev.data);
@@ -187,6 +196,8 @@ joinRoomBtn.addEventListener('click', async () => {
   lobbySection.classList.add('hidden');
   roomSection.classList.remove('hidden');
   roomLabel.textContent = `Комната: ${roomId}`;
+  // Инициируем захват микрофона сразу, чтобы запросить разрешение
+  try { await ensurePeerConnection(); } catch {}
   initWs();
 });
 
